@@ -1,26 +1,25 @@
-const {
-    createUser,
-    getUser
-} = require('../services/user');
+const placesServices = require('../services/locations');
+const middlewares = require('../middlewares/validation');
 
 module.exports = (app) => {
-    app.post('/location', async (req, res) => {
-        const user = req.body
+
+    app.post('/location', middlewares.validateGetPlaces, async (req, res) => {
+        const location = req.body;
         try {
-            const response = await createUser(user)
-            res.json(response)
+            const places = await placesServices.getPlacesByLocation(location)
+            res.json({ places: places })
         } catch (e) {
-            res.status(400).json({ token: '', mensaje: e.message })
+            console.log(e)
+            res.status(400).json({ message: "Ocurrió un error consultando los sitios" })
         }
     })
 
-    app.post('/location/records', async (req, res) => {
-        const user = req.body;
+    app.get('/location/records', async (_, res) => {
         try {
-            const reponse = await getUser(user)
-            res.json(reponse)
+            const records = await placesServices.getAllLocationRecords();
+            res.json({ records })
         } catch (e) {
-            res.status(400).json({ mensaje: e.message, token:'' })
+            res.status(400).json({ message: "Ocurrió un error consultando los registros" })
         }
     })
 }

@@ -32,3 +32,12 @@ module.exports.validateLoginForm = (req, res, next) => {
         next()
     }
 }
+
+module.exports.validateGetPlaces = (req, res, next) => {
+    const { latitude, longitude } = req.body
+    if (!latitude || !longitude) {
+        res.status(401).json({ message: "Latitud y longitud obligatorios" })
+    } else {
+        next()
+    }
+} 

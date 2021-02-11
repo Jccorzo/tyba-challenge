@@ -1,16 +1,15 @@
-const { insert, get } = require('../database/methods');
-const { newUser, savedUser } = require('../database/queries');
 const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 const config = require('../config');
+const User = require('../models/user');
 
 module.exports.createUser = async (user) => {
     try {
         const securePass = crypto.createHash('md5').update(user.password).digest('hex');
-        await insert(newUser, { ...user, password: securePass, })
-        delete (user.password)
+        const newUser = new User({ ...user, password: securePass });
+        await newUser.save()
         const userToken = jwt.sign({
-            usuario: user.usuario,
+            user: user.username,
         }, config.jwt, {
             algorithm: "HS512",
         });
@@ -22,25 +21,22 @@ module.exports.createUser = async (user) => {
 }
 
 module.exports.getUser = async (user) => {
-    try {
-        const foundUser = await get(savedUser, user)
-        if (Array.isArray(foundUser) && foundUser.length > 0) {
-            const securePass = crypto.createHash('md5').update(user.password).digest('hex');
-            if (securePass === foundUser[0].password) {
-                delete (foundUser[0].password)
-                const userToken = jwt.sign({
-                    usuario: user.username,
-                }, config.jwt, {
-                    algorithm: "HS512",
-                });
-                return { token: userToken }
-            } else {
-                throw new Error('Contraseña incorrecta')
-            }
+    const users = await User.where({ username: user.username })
+    if (users.length > 0) {
+        const securePass = crypto.createHash('md5').update(user.password).digest('hex');
+        if (securePass === users[0].password) {
+            delete (users[0].password)
+            const userToken = jwt.sign({
+                user: user.username,
+            }, config.jwt, {
+                algorithm: "HS512",
+            });
+            return { token: userToken }
         } else {
-            throw new Error('El usuario no existe')
+            throw new Error('Contraseña incorrecta')
         }
-    } catch (e) {
-        throw new Error(e.message)
+    } else {
+        throw new Error('El usuario no existe')
     }
 }
+
