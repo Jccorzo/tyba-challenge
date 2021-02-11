@@ -1,11 +1,13 @@
 version: "3.9"
 services: 
   db:
-    build: ./database
+    image: mongo
     ports: 
-      - "3306:3306"
+      - "27017:27017"
   back:
     build: .
+    environment: 
+      - API_KEY=${API_KEY}
     ports: 
       - "3000:3000"
     depends_on:

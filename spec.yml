@@ -1,0 +1,175 @@
+openapi: "3.0.0"
+info:
+  description: ""
+  title: "Tyba challenge"
+  version: "1.0.0"
+servers: 
+  - url: "http://localhost:3000"
+components:
+  securitySchemes:
+    bearerAuth:         
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+paths:
+  /user/signUp: 
+      post:
+        summary: "Create user"
+        requestBody: 
+          content: 
+            application/json:
+              schema:
+                type: "object"
+                properties: 
+                  username:
+                    type: "string"
+                  user:
+                    type: "string"
+                  password:
+                    type: "string"
+        responses:
+          "201":
+            description: "User created"
+            content:
+              application/json:
+                schema:
+                  type: "object"
+                  properties:
+                    token:
+                      type: "string"
+                    message: 
+                      type: "string"
+          "400":
+            description: "Some error happend"
+            content:
+              application/json:
+                schema:
+                  type: "object"
+                  properties:
+                    token: 
+                      type: "string"
+                    message:
+                      type: "string"
+  /user/login:
+    post: 
+      summary: "Login user"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: "object"
+              properties: 
+                username: 
+                  type: "string"
+                password:
+                  type: "string"
+      responses: 
+        "200":
+          description: "Login Succeed"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  token:
+                    type: "string"
+        "400":
+          description: "username or password incorrect"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  token:
+                    type: "string"
+                  message:
+                    type: "string"
+  /location:
+    post:
+      security:
+        - bearerAuth: []
+      summary: "Get places by location and save record"
+      requestBody: 
+        content:
+          application/json:
+            schema:
+              type: "object"
+              properties:
+                latitude: 
+                  type: "number"
+                longitude:
+                  type: "string"
+      responses:
+        "200":
+          description: "request success"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  mensaje: 
+                    type: "string"
+        "400":
+          description: "some error happend"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  mensaje:
+                    type: "string"
+        "401":
+          description: "authentication errors"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  mensaje:
+                    type: "string"
+  /location/records:
+        get:
+          security:
+            - bearerAuth: []
+          summary: "get all location records"
+          responses:
+            "200":
+              description: "all products"
+              content:
+                application/json:
+                  schema:
+                    type: "object"
+                    properties: 
+                      records:
+                        type: "array"
+                        items: 
+                          type: "object"
+                          properties:
+                            _id:
+                              type: "string"
+                            places:
+                              type: "array"
+                              items:
+                                type: "string"
+                            latitude:
+                              type: "number"
+                            longitude: 
+                              type: "string"
+            "401":
+              description: "authentication errors"
+              content:
+                application/json:
+                  schema:
+                    type: "object"
+                    properties: 
+                      mensaje:
+                        type: "string"
+            "400":
+              description: "some error happend"
+              content:
+                application/json:
+                  schema:
+                    type: "object"
+                    properties: 
+                      mensaje:
+                        type: "string"

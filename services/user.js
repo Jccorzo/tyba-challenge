@@ -15,7 +15,7 @@ module.exports.createUser = async (user) => {
         });
         return { message: 'Usuario creado correctamente', token: userToken }
     } catch (e) {
-        console.log(e.parent.sqlMessage)
+        console.log(e)
         throw new Error('Ocurrió un error creando el usuario')
     }
 }
